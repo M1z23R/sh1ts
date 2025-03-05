@@ -30,15 +30,48 @@ export class WorksheetService {
     return worksheet[cell] ? worksheet[cell].v : '';
   };
 
-  getPage = async (
+  updateCell = async (worksheet: xlsx.WorkSheet, cell: WorksheetCell) => {
+    const original = worksheet[cell.position]
+    worksheet[cell.position] = { ...original, v: cell.value }
+  }
+
+  getInitial = async (
     file: File,
-    start: number = 0,
-    limit: number = 15,
-  ): Promise<{ items: string[][]; total: number }> => {
+  ): Promise<{ worksheet: xlsx.WorkSheet | null, items: WorksheetRow[]; total: number }> => {
     try {
       const workbook = xlsx.read(await file.arrayBuffer());
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
+      const range = this.getWorksheetRange(worksheet);
+
+      const items: WorksheetRow[] = [];
+      for (let i = 1; i <= range.rows && items.length < 15; i++) {
+        const row: WorksheetRow = { cells: [] };
+        for (let j = 1; j <= range.cols; j++) {
+          const value = this.getSafeValueFromCell(
+            `${this.columnToLetter(j)}${i}`,
+            worksheet,
+          );
+          const cell: WorksheetCell = { value, editing: false, position: `${this.columnToLetter(j)}${i}` }
+          row.cells.push(cell);
+        }
+
+        items.push(row);
+      }
+
+      return { worksheet, items, total: range.rows };
+    } catch (error) {
+      console.error(error);
+      return { items: [], total: 0, worksheet: null };
+    }
+  };
+
+  getPage = async (
+    worksheet: xlsx.WorkSheet,
+    start: number = 0,
+    limit: number = 15,
+  ): Promise<{ items: WorksheetRow[]; total: number }> => {
+    try {
       const range = this.getWorksheetRange(worksheet);
 
       let realStart = 1 + start;
@@ -47,16 +80,18 @@ export class WorksheetService {
       }
       realStart = Math.max(0, realStart);
 
-      const items: string[][] = [];
+      const items: WorksheetRow[] = [];
       for (let i = realStart; i <= range.rows && items.length < limit; i++) {
-        const row: string[] = [];
+        const row: WorksheetRow = { cells: [] };
         for (let j = 1; j <= range.cols; j++) {
-          const cell = this.getSafeValueFromCell(
+          const value = this.getSafeValueFromCell(
             `${this.columnToLetter(j)}${i}`,
             worksheet,
           );
-          row.push(cell);
+          const cell: WorksheetCell = { value, editing: false, position: `${this.columnToLetter(j)}${i}` }
+          row.cells.push(cell);
         }
+
         items.push(row);
       }
 
@@ -66,6 +101,17 @@ export class WorksheetService {
       return { items: [], total: 0 };
     }
   };
+
+}
+
+export interface WorksheetRow {
+  cells: WorksheetCell[]
+}
+
+export interface WorksheetCell {
+  value: string;
+  position: string //A1, B2, etc
+  editing: boolean
 }
 
 export interface WorksheetRange {

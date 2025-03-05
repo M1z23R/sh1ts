@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { VirtualScrollComponent } from './components/virtual-scroll/virtual-scroll.component';
 import { VirtualTableComponent } from './components/virtual-table/virtual-table.component';
-import { WorksheetService } from './services/worksheet.service';
+import { WorksheetCell, WorksheetRow, WorksheetService } from './services/worksheet.service';
+import { WorkSheet } from 'xlsx';
 
 @Component({
   selector: 'app-root',
@@ -14,10 +15,16 @@ export class AppComponent {
 
   percentage = signal<number>(0);
   file = signal<File | null>(null);
-  items = signal<string[][]>([]);
+  worksheet = signal<WorkSheet | null>(null)
+  items = signal<WorksheetRow[]>([]);
   total = signal<number>(0);
   perPage = signal<number>(15);
   index = signal<number>(0);
+
+  onWheelScroll(e: Event) {
+    this.index.update(c => c + (e as any).wheelDeltaY)
+    console.log(e);
+  }
 
   onFileChange(e: Event) {
     const el = e.target as HTMLInputElement;
@@ -29,27 +36,35 @@ export class AppComponent {
     }
 
     this.file.set(file);
-    this.worksheetService.getPage(file, 0, 15).then((r) => {
+    this.worksheetService.getInitial(file).then((r) => {
       this.items.set(r.items);
       this.total.set(r.total);
+      this.worksheet.set(r.worksheet);
     });
   }
 
   onPercentageChange(v: number) {
     this.percentage.set(v);
 
-    const file = this.file();
-    if (!file) {
-      return;
+    const worksheet = this.worksheet();
+    if (!worksheet) {
+      return
     }
 
     const currentIndex = Math.round((this.total() * v) / 100);
     this.index.set(currentIndex);
+
     this.worksheetService
-      .getPage(file, currentIndex, this.perPage())
+      .getPage(worksheet, currentIndex, this.perPage())
       .then((r) => {
         this.items.set(r.items);
         this.total.set(r.total);
       });
+  }
+
+  onCellValueChanged(cell: WorksheetCell) {
+    const worksheet = this.worksheet();
+    if (!worksheet) { return }
+    this.worksheetService.updateCell(worksheet, cell);
   }
 }

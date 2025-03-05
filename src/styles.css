@@ -6,3 +6,34 @@ html,
 body {
   height: 100vh;
 }
+
+
+.btn-default {
+  @apply text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800;
+}
+.btn-default.small {
+  @apply text-sm px-2.5 py-1.5;
+}
+.btn-default:disabled {
+  @apply bg-gray-800 cursor-not-allowed;
+}
+
+h1 {
+  @apply text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white;
+}
+
+td {
+  @apply px-6 py-4;
+}
+
+th {
+  @apply px-6 py-3;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+textarea {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 hover:border-gray-400 outline-none;
+}
