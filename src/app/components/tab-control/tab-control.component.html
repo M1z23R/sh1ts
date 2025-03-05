@@ -1,0 +1,18 @@
+<div class="grid grid-rows-[1fr_auto] gap-1">
+  <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+    @for (tab of tabs(); track tab) {
+    <li class="me-1 cursor-pointer" (click)="onChangeTab(tab)">
+      <div class="inline-block px-4 py-1 rounded-lg" [ngClass]="tab.active ? 'bg-blue-600  text-white' : 'bg-gray-600'">
+        {{ tab.label }}
+      </div>
+    </li>
+    }
+  </ul>
+  @for (tab of tabs(); track tab) {
+  @if (tab.active) {
+  <div class="border border-gray-300 w-full h-full">
+    <app-worksheet [worksheet]="tab.worksheet" />
+  </div>
+  }
+  }
+</div>

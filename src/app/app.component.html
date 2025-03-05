@@ -1,10 +1,24 @@
-<div class="grid grid-cols-[1fr_auto] gap-1 h-full" (wheel)="onWheelScroll($event)">
-  <div class="flex flex-col gap-1 h-full">
-    <div class="p-2">
-      <input type="file" (change)="onFileChange($event)" />
-    </div>
-    <app-virtual-table [index]="index()" [percentage]="percentage()" [rows]="items()" (cellValueChanged)="onCellValueChanged($event)" />
+<div class="grid grid-rows-[auto_1fr_auto] gap-1 h-full p-2">
+  <div class="flex justify-between items-center">
+    <input type="file" (change)="onFileChange($event)" />
+    <button class="btn-default" (click)="onExport()">Export</button>
   </div>
-  <app-virtual-scroll [percentage]="percentage()" (percentageChange)="onPercentageChange($event)"
-    [itemsPerPage]="perPage()" [totalItems]="total()" />
+  <app-tab-control [tabs]="tabs()" />
+
+  @if (false) {
+  <div>
+    @if (selectedWorksheet()) {
+    <app-worksheet [worksheet]="selectedWorksheet()!" />
+    } @else {
+    <h1>No worksheet selected!</h1>
+    }
+  </div>
+  <div class="flex gap-2 items-center">
+    @for (item of worksheets(); track $index) {
+    <button class="btn-default" (click)="onChangeWorksheet(item.worksheet)">
+      {{ item.id }}
+    </button>
+    }
+  </div>
+  }
 </div>

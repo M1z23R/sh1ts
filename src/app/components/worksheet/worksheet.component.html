@@ -1,0 +1,5 @@
+<div class="grid grid-cols-[1fr_auto] gap-1 h-full" (wheel)="onWheelScroll($event)">
+  <app-virtual-table [index]="index()" [rows]="items()" (cellValueChanged)="onCellValueChanged($event)" />
+  <app-virtual-scroll [index]="index()" (indexChange)="onIndexChange($event)" [itemsPerPage]="perPage()"
+    [totalItems]="total()" />
+</div>

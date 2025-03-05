@@ -12,7 +12,6 @@ import { ClickOutsideDirective } from '../../directives/click-outside.directive'
 export class VirtualTableComponent {
   index = input.required<number>()
   rows = model.required<WorksheetRow[]>()
-  percentage = input.required<number>();
 
   editing = signal<boolean>(false);
   cellInput = signal<string>("")

@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  effect,
   ElementRef,
   HostListener,
   model,
@@ -15,9 +16,20 @@ import {
   styleUrl: './virtual-scroll.component.css',
 })
 export class VirtualScrollComponent {
+  constructor() {
+    effect(() => {
+      const percent = this.index() / this.totalItems();
+      const containerHeight = this.container?.nativeElement.clientHeight || 1;
+      const maxPosition = containerHeight - this.boxHeight();
+
+      this.boxPosition.set(percent * maxPosition);
+    });
+  }
+
   @ViewChild('container', { static: true }) container!: ElementRef;
   @ViewChild('box', { static: true }) box!: ElementRef;
-  percentage = model<number>(0);
+
+  index = model.required<number>();
 
   itemsPerPage = model(1);
   totalItems = model(1);
@@ -37,7 +49,7 @@ export class VirtualScrollComponent {
   calculatePercentage() {
     const containerHeight = this.container?.nativeElement.clientHeight || 1;
     const maxPosition = containerHeight - this.boxHeight();
-    return Math.max(0, Math.min(100, (this.boxPosition() / maxPosition) * 100));
+    return Math.max(0, Math.min(100, this.boxPosition() / maxPosition));
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -57,7 +69,8 @@ export class VirtualScrollComponent {
   @HostListener('document:mouseup')
   onMouseUp() {
     this.isDragging.set(false);
-    this.percentage.set(this.calculatePercentage());
+    const percent = this.calculatePercentage();
+    this.index.set(Math.round(percent * this.totalItems()));
   }
 
   onMouseDown(event: MouseEvent) {

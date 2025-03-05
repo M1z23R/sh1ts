@@ -31,13 +31,22 @@ export class WorksheetService {
   };
 
   updateCell = async (worksheet: xlsx.WorkSheet, cell: WorksheetCell) => {
-    const original = worksheet[cell.position]
-    worksheet[cell.position] = { ...original, v: cell.value }
-  }
+    const original = worksheet[cell.position];
+    worksheet[cell.position] = { ...original, v: cell.value };
+  };
+
+  getWorkbook = async (file: File): Promise<xlsx.WorkBook> => {
+    const workbook = xlsx.read(await file.arrayBuffer());
+    return workbook;
+  };
 
   getInitial = async (
     file: File,
-  ): Promise<{ worksheet: xlsx.WorkSheet | null, items: WorksheetRow[]; total: number }> => {
+  ): Promise<{
+    worksheet: xlsx.WorkSheet | null;
+    items: WorksheetRow[];
+    total: number;
+  }> => {
     try {
       const workbook = xlsx.read(await file.arrayBuffer());
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -52,7 +61,11 @@ export class WorksheetService {
             `${this.columnToLetter(j)}${i}`,
             worksheet,
           );
-          const cell: WorksheetCell = { value, editing: false, position: `${this.columnToLetter(j)}${i}` }
+          const cell: WorksheetCell = {
+            value,
+            editing: false,
+            position: `${this.columnToLetter(j)}${i}`,
+          };
           row.cells.push(cell);
         }
 
@@ -73,22 +86,19 @@ export class WorksheetService {
   ): Promise<{ items: WorksheetRow[]; total: number }> => {
     try {
       const range = this.getWorksheetRange(worksheet);
-
-      let realStart = 1 + start;
-      if (realStart > range.rows - limit) {
-        realStart = range.rows - limit;
-      }
-      realStart = Math.max(0, realStart);
-
       const items: WorksheetRow[] = [];
-      for (let i = realStart; i <= range.rows && items.length < limit; i++) {
+      for (let i = start + 1; i <= range.rows && items.length < limit; i++) {
         const row: WorksheetRow = { cells: [] };
         for (let j = 1; j <= range.cols; j++) {
           const value = this.getSafeValueFromCell(
             `${this.columnToLetter(j)}${i}`,
             worksheet,
           );
-          const cell: WorksheetCell = { value, editing: false, position: `${this.columnToLetter(j)}${i}` }
+          const cell: WorksheetCell = {
+            value,
+            editing: false,
+            position: `${this.columnToLetter(j)}${i}`,
+          };
           row.cells.push(cell);
         }
 
@@ -102,16 +112,64 @@ export class WorksheetService {
     }
   };
 
+  exportWorkbook = async (
+    workbook: xlsx.WorkBook,
+    fileName: string = 'sh1t.xlsx',
+  ) => {
+    const filePicker = (window as any).showSaveFilePicker;
+
+    const xlsxBlob = new Blob(
+      [xlsx.write(workbook, { bookType: 'xlsx', type: 'array' })],
+      {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      },
+    );
+    if (filePicker) {
+      try {
+        const handle = await filePicker({
+          suggestedName: fileName,
+          types: [
+            {
+              description: 'Spreadsheet Files',
+              accept: {
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                  ['.xlsx'],
+              },
+            },
+          ],
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(xlsxBlob);
+        await writable.close();
+        console.log('File saved successfully!');
+      } catch (err) {
+        console.error('Save canceled or failed:', err);
+      }
+    } else {
+      this.downloadFileFallback(xlsxBlob, fileName);
+    }
+    xlsx.writeFileXLSX(workbook, fileName);
+  };
+
+  private downloadFileFallback(blob: Blob, fileName: string) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }
 
 export interface WorksheetRow {
-  cells: WorksheetCell[]
+  cells: WorksheetCell[];
 }
 
 export interface WorksheetCell {
   value: string;
-  position: string //A1, B2, etc
-  editing: boolean
+  position: string; //A1, B2, etc
+  editing: boolean;
 }
 
 export interface WorksheetRange {

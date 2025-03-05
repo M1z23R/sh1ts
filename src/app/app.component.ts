@@ -1,30 +1,40 @@
-import { Component, inject, signal } from '@angular/core';
-import { VirtualScrollComponent } from './components/virtual-scroll/virtual-scroll.component';
-import { VirtualTableComponent } from './components/virtual-table/virtual-table.component';
-import { WorksheetCell, WorksheetRow, WorksheetService } from './services/worksheet.service';
-import { WorkSheet } from 'xlsx';
+import { Component, computed, inject, signal } from '@angular/core';
+import { WorksheetRow, WorksheetService } from './services/worksheet.service';
+import { WorkBook, WorkSheet } from 'xlsx';
+import { WorksheetComponent } from './components/worksheet/worksheet.component';
+import {
+  TabControlComponent,
+  TabControlTab,
+} from './components/tab-control/tab-control.component';
 
 @Component({
   selector: 'app-root',
-  imports: [VirtualScrollComponent, VirtualTableComponent],
+  imports: [WorksheetComponent, TabControlComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent {
   worksheetService = inject(WorksheetService);
+  workbook = signal<WorkBook | null>(null);
 
-  percentage = signal<number>(0);
+  tabs = signal<TabControlTab[]>([]);
+  worksheets = computed(() => {
+    const workbook = this.workbook();
+    if (!workbook) {
+      return [];
+    }
+    const worksheets = workbook.Sheets;
+    return Object.keys(worksheets).map((worksheet) => {
+      return { id: worksheet, worksheet: worksheets[worksheet] };
+    });
+  });
+  selectedWorksheet = signal<WorkSheet | null>(null);
+
   file = signal<File | null>(null);
-  worksheet = signal<WorkSheet | null>(null)
   items = signal<WorksheetRow[]>([]);
   total = signal<number>(0);
   perPage = signal<number>(15);
   index = signal<number>(0);
-
-  onWheelScroll(e: Event) {
-    this.index.update(c => c + (e as any).wheelDeltaY)
-    console.log(e);
-  }
 
   onFileChange(e: Event) {
     const el = e.target as HTMLInputElement;
@@ -36,35 +46,26 @@ export class AppComponent {
     }
 
     this.file.set(file);
-    this.worksheetService.getInitial(file).then((r) => {
-      this.items.set(r.items);
-      this.total.set(r.total);
-      this.worksheet.set(r.worksheet);
+    this.worksheetService.getWorkbook(file).then((workbook) => {
+      this.workbook.set(workbook);
+      this.tabs.set(
+        Object.keys(workbook.Sheets).map((x, i) => {
+          return { active: i === 0, label: x, worksheet: workbook.Sheets[x] };
+        }),
+      );
+      this.selectedWorksheet.set(Object.values(workbook.Sheets)[0]);
     });
   }
 
-  onPercentageChange(v: number) {
-    this.percentage.set(v);
-
-    const worksheet = this.worksheet();
-    if (!worksheet) {
-      return
-    }
-
-    const currentIndex = Math.round((this.total() * v) / 100);
-    this.index.set(currentIndex);
-
-    this.worksheetService
-      .getPage(worksheet, currentIndex, this.perPage())
-      .then((r) => {
-        this.items.set(r.items);
-        this.total.set(r.total);
-      });
+  onChangeWorksheet(worksheet: WorkSheet) {
+    this.selectedWorksheet.set(worksheet);
   }
 
-  onCellValueChanged(cell: WorksheetCell) {
-    const worksheet = this.worksheet();
-    if (!worksheet) { return }
-    this.worksheetService.updateCell(worksheet, cell);
+  onExport() {
+    const workbook = this.workbook();
+    if (!workbook) {
+      return;
+    }
+    this.worksheetService.exportWorkbook(workbook);
   }
 }
