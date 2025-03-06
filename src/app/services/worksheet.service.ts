@@ -55,7 +55,7 @@ export class WorksheetService {
 
       const items: WorksheetRow[] = [];
       for (let i = 1; i <= range.rows && items.length < 15; i++) {
-        const row: WorksheetRow = { cells: [] };
+        const row: WorksheetRow = { index: i, cells: [] };
         for (let j = 1; j <= range.cols; j++) {
           const value = this.getSafeValueFromCell(
             `${this.columnToLetter(j)}${i}`,
@@ -88,7 +88,7 @@ export class WorksheetService {
       const range = this.getWorksheetRange(worksheet);
       const items: WorksheetRow[] = [];
       for (let i = start + 1; i <= range.rows && items.length < limit; i++) {
-        const row: WorksheetRow = { cells: [] };
+        const row: WorksheetRow = { index: i, cells: [] };
         for (let j = 1; j <= range.cols; j++) {
           const value = this.getSafeValueFromCell(
             `${this.columnToLetter(j)}${i}`,
@@ -163,6 +163,7 @@ export class WorksheetService {
 }
 
 export interface WorksheetRow {
+  index: number;
   cells: WorksheetCell[];
 }
 

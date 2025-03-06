@@ -25,6 +25,8 @@ export class WorksheetComponent {
   index = signal<number>(0);
 
   onWheelScroll(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
     const isPositive = (e as any).wheelDeltaY > 0;
     const newIndex = Math.min(
       this.total(),

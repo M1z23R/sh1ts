@@ -1,12 +1,14 @@
 {
   "name": "sh1ts",
   "version": "0.0.0",
+  "homepage": "https://m1z23r.github.io/sh1ts",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "ng deploy --base-href=/sh1ts/"
   },
   "private": true,
   "dependencies": {
@@ -18,6 +20,7 @@
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
     "@tailwindcss/postcss": "^4.0.9",
+    "angular-cli-ghpages": "^2.0.3",
     "postcss": "^8.5.3",
     "rxjs": "~7.8.0",
     "tailwindcss": "3",
