@@ -45,6 +45,17 @@ export class AppComponent {
       return;
     }
 
+    const allowedTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv',
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Please upload an Excel file.');
+      this.file.set(null);
+      return;
+    }
+
     this.file.set(file);
     this.worksheetService.getWorkbook(file).then((workbook) => {
       this.workbook.set(workbook);
