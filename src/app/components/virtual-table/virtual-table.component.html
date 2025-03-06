@@ -10,7 +10,7 @@
           <input type="text" (keydown)="onCellInputKeyDown(cell, $event)" [(ngModel)]="cellInput" appClickOutside
             (blur)="onClickOutside(cell)" appAutoFocus />
           } @else {
-          <div class="truncate text-nowrap overflow-ellipsis">
+          <div class="truncate text-nowrap overflow-ellipsis" tooltip [content]="cell.value" [position]="'top'">
             {{ cell.value }}
           </div>
           }

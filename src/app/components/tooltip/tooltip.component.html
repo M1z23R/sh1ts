@@ -1,0 +1,10 @@
+<div #container
+  class="absolute z-[200] invisible px-3 py-2 text-sm font-medium text-white transition-opacity duration-500 bg-gray-600 rounded-lg shadow-sm"
+  [style.top.px]="top()" [style.left.px]="left()" [ngClass]="{
+    'opacity-0': !visible(),
+    'opacity-100': visible(),
+    invisible: hidden(),
+  }">
+  {{ content() }}
+  <div class="tooltip-arrow" data-popper-arrow></div>
+</div>
