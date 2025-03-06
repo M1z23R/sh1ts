@@ -49,7 +49,6 @@ export class VirtualTableComponent {
   }
 
   stopEditing(cell: WorksheetCell, save: boolean) {
-    console.log(save);
     this.editing.set(false);
     this.rows.update((c) => {
       cell.editing = !cell.editing;
