@@ -8,21 +8,4 @@
     <button class="btn-default" (click)="onExport()">Export</button>
   </div>
   <app-tab-control [tabs]="tabs()" />
-
-  @if (false) {
-    <div>
-      @if (selectedWorksheet()) {
-        <app-worksheet [worksheet]="selectedWorksheet()!" />
-      } @else {
-        <h1>No worksheet selected!</h1>
-      }
-    </div>
-    <div class="flex gap-2 items-center">
-      @for (item of worksheets(); track $index) {
-        <button class="btn-default" (click)="onChangeWorksheet(item.worksheet)">
-          {{ item.id }}
-        </button>
-      }
-    </div>
-  }
 </div>

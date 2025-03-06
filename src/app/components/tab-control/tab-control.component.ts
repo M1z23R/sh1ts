@@ -14,7 +14,7 @@ export class TabControlComponent {
 
   onChangeTab(tab: TabControlTab) {
     this.tabs.update((c) =>
-      [...c].map((item) => {
+      c.map((item) => {
         return { ...item, active: item === tab };
       }),
     );

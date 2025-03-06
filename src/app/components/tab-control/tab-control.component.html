@@ -1,21 +1,28 @@
 <div class="grid grid-rows-[auto_1fr] gap-1 h-full">
   <div class="overflow-x-auto">
-    <ul class="flex flex-nowrap text-sm font-medium text-center text-gray-500 dark:text-gray-400 ">
-      @for (tab of tabs(); track tab) {
-      <li class="me-1 cursor-pointer whitespace-nowrap flex-shrink-0" (click)="onChangeTab(tab)">
-        <div class="inline-block px-4 py-1 rounded-lg text-white line-clamp-1"
-          [ngClass]="tab.active ? 'bg-blue-600' : 'bg-gray-600'">
-          {{ tab.label }}
-        </div>
-      </li>
+    <ul
+      class="flex flex-nowrap text-sm font-medium text-center text-gray-500 dark:text-gray-400"
+    >
+      @for (tab of tabs(); track tab.label) {
+        <li
+          class="me-1 cursor-pointer whitespace-nowrap flex-shrink-0"
+          (click)="onChangeTab(tab)"
+        >
+          <div
+            class="inline-block px-4 py-1 rounded-lg text-white line-clamp-1"
+            [ngClass]="tab.active ? 'bg-blue-600' : 'bg-gray-600'"
+          >
+            {{ tab.label }}
+          </div>
+        </li>
       }
     </ul>
   </div>
   @for (tab of tabs(); track tab) {
-  @if (tab.active) {
-  <div class="border border-gray-300 w-full h-full">
-    <app-worksheet [worksheet]="tab.worksheet" />
-  </div>
-  }
+    @if (tab.active) {
+      <div class="border border-gray-300 w-full h-full">
+        <app-worksheet [worksheet]="tab.worksheet" />
+      </div>
+    }
   }
 </div>

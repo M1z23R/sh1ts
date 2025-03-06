@@ -8,13 +8,11 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WorksheetCell, WorksheetRow } from '../../services/worksheet.service';
-import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { AutoFocusDirective } from '../../directives/auto-focus.directive';
-import { TooltipDirective } from '../../directives/tooltip.directive';
 
 @Component({
   selector: 'app-virtual-table',
-  imports: [ClickOutsideDirective, AutoFocusDirective, TooltipDirective, FormsModule],
+  imports: [AutoFocusDirective, FormsModule],
   templateUrl: './virtual-table.component.html',
   styleUrl: './virtual-table.component.css',
 })
@@ -60,6 +58,37 @@ export class VirtualTableComponent {
     });
     this.cellInput.set('');
     this.cellValueChanged.emit(cell);
+  }
+
+  selectRow(row: WorksheetRow, e: MouseEvent) {
+    this.rows.update((c) => {
+      return c.map((x) => {
+        return {
+          ...x,
+          cells: x.cells.map((y) => {
+            return { ...y, selected: x === row || (y.selected && e.ctrlKey) };
+          }),
+        };
+      });
+    });
+  }
+
+  selectCell(cell: WorksheetCell, e: MouseEvent) {
+    e.stopPropagation();
+    this.rows.update((rows) => {
+      return rows.map((row) => {
+        return {
+          index: row.index,
+          cells: row.cells.map((currentCell) => {
+            return {
+              ...currentCell,
+              selected:
+                (currentCell.selected && e.ctrlKey) || currentCell === cell,
+            };
+          }),
+        };
+      });
+    });
   }
 
   startEditing(cell: WorksheetCell) {
