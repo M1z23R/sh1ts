@@ -60,37 +60,6 @@ export class VirtualTableComponent {
     this.cellValueChanged.emit(cell);
   }
 
-  selectRow(row: WorksheetRow, e: MouseEvent) {
-    this.rows.update((c) => {
-      return c.map((x) => {
-        return {
-          ...x,
-          cells: x.cells.map((y) => {
-            return { ...y, selected: x === row || (y.selected && e.ctrlKey) };
-          }),
-        };
-      });
-    });
-  }
-
-  selectCell(cell: WorksheetCell, e: MouseEvent) {
-    e.stopPropagation();
-    this.rows.update((rows) => {
-      return rows.map((row) => {
-        return {
-          index: row.index,
-          cells: row.cells.map((currentCell) => {
-            return {
-              ...currentCell,
-              selected:
-                (currentCell.selected && e.ctrlKey) || currentCell === cell,
-            };
-          }),
-        };
-      });
-    });
-  }
-
   startEditing(cell: WorksheetCell) {
     if (this.editing()) {
       return;

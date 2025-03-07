@@ -66,7 +66,6 @@ export class WorksheetService {
             value,
             position: `${this.columnToLetter(j)}${i}`,
             editing: false,
-            selected: false,
           };
           row.cells.push(cell);
         }
@@ -100,7 +99,6 @@ export class WorksheetService {
             value,
             position: `${this.columnToLetter(j)}${i}`,
             editing: false,
-            selected: false,
           };
           row.cells.push(cell);
         }
@@ -174,7 +172,7 @@ export interface WorksheetCell {
   value: string;
   position: string; //A1, B2, etc
   editing: boolean;
-  selected: boolean;
+  //selected: boolean;
 }
 
 export interface WorksheetRange {
