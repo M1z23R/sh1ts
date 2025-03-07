@@ -42,5 +42,5 @@ input[type="password"].small,
 input[type="number"].small,
 input[type="email"].small,
 textarea.small {
-  @apply px-2 py-0;
+  @apply px-2 py-0 rounded-sm;
 }
