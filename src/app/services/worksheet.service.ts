@@ -42,6 +42,7 @@ export class WorksheetService {
 
   getInitial = async (
     file: File,
+    perPage: number,
   ): Promise<{
     worksheet: xlsx.WorkSheet | null;
     items: WorksheetRow[];
@@ -54,7 +55,7 @@ export class WorksheetService {
       const range = this.getWorksheetRange(worksheet);
 
       const items: WorksheetRow[] = [];
-      for (let i = 1; i <= range.rows && items.length < 15; i++) {
+      for (let i = 1; i <= range.rows && items.length < perPage; i++) {
         const row: WorksheetRow = { index: i, cells: [] };
         for (let j = 1; j <= range.cols; j++) {
           const value = this.getSafeValueFromCell(
@@ -63,8 +64,8 @@ export class WorksheetService {
           );
           const cell: WorksheetCell = {
             value,
-            editing: false,
             position: `${this.columnToLetter(j)}${i}`,
+            editing: false,
           };
           row.cells.push(cell);
         }
@@ -81,8 +82,8 @@ export class WorksheetService {
 
   getPage = async (
     worksheet: xlsx.WorkSheet,
-    start: number = 0,
-    limit: number = 15,
+    start: number,
+    limit: number,
   ): Promise<{ items: WorksheetRow[]; total: number }> => {
     try {
       const range = this.getWorksheetRange(worksheet);
@@ -96,8 +97,8 @@ export class WorksheetService {
           );
           const cell: WorksheetCell = {
             value,
-            editing: false,
             position: `${this.columnToLetter(j)}${i}`,
+            editing: false,
           };
           row.cells.push(cell);
         }
@@ -171,6 +172,7 @@ export interface WorksheetCell {
   value: string;
   position: string; //A1, B2, etc
   editing: boolean;
+  //selected: boolean;
 }
 
 export interface WorksheetRange {

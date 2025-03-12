@@ -2,21 +2,36 @@
   <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
     <tbody>
       @for (row of rows(); track row.index) {
-      <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-        <td class="px-6 py-4 w-4">{{ $index + index() + 1 }}</td>
-        @for (cell of row.cells; track cell.position) {
-        <td class="px-6 py-4" (dblclick)="startEditing(cell)">
-          @if (cell.editing) {
-          <input type="text" (keydown)="onCellInputKeyDown(cell, $event)" [(ngModel)]="cellInput" appClickOutside
-            (blur)="onClickOutside(cell)" appAutoFocus />
-          } @else {
-          <div class="truncate text-nowrap overflow-ellipsis" tooltip [content]="cell.value" [position]="'top'">
-            {{ cell.value }}
-          </div>
+        <tr
+          class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+        >
+          <td
+            class="px-1 py-1 w-12 h-8 border border-black dark:border-gray-500"
+          >
+            {{ $index + index() + 1 }}
+          </td>
+          @for (cell of row.cells; track cell.position) {
+            <td
+              class="px-1 py-1 h-8 border border-black dark:border-gray-500"
+              (dblclick)="startEditing(cell)"
+            >
+              @if (cell.editing) {
+                <input
+                  class="small"
+                  type="text"
+                  (keydown)="onCellInputKeyDown(cell, $event)"
+                  [(ngModel)]="cellInput"
+                  (blur)="onClickOutside(cell)"
+                  appAutoFocus
+                />
+              } @else {
+                <div class="truncate text-nowrap overflow-ellipsis">
+                  {{ cell.value }}
+                </div>
+              }
+            </td>
           }
-        </td>
-        }
-      </tr>
+        </tr>
       }
     </tbody>
   </table>

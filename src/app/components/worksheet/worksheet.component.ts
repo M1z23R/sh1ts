@@ -1,4 +1,13 @@
-import { Component, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { VirtualTableComponent } from '../virtual-table/virtual-table.component';
 import { VirtualScrollComponent } from '../virtual-scroll/virtual-scroll.component';
 import { WorkSheet } from 'xlsx';
@@ -16,12 +25,16 @@ import {
 })
 export class WorksheetComponent {
   worksheetService = inject(WorksheetService);
+  @ViewChild('tableContainer') tableContainer!: ElementRef;
+
+  tableHeight$ = signal(0);
+  private resizeObserver!: ResizeObserver;
 
   file = signal<File | null>(null);
   worksheet = input.required<WorkSheet>();
   items = signal<WorksheetRow[]>([]);
   total = signal<number>(0);
-  perPage = signal<number>(15);
+  perPage = computed(() => Math.floor(this.tableHeight$() / 32));
   index = signal<number>(0);
 
   onWheelScroll(e: Event) {
@@ -30,7 +43,7 @@ export class WorksheetComponent {
     const isPositive = (e as any).wheelDeltaY > 0;
     const newIndex = Math.min(
       this.total(),
-      Math.max(0, this.index() + (isPositive ? -15 : 15)),
+      Math.max(0, this.index() + (isPositive ? -1 : 1) * this.perPage()),
     );
     this.onIndexChange(newIndex);
   }
@@ -66,5 +79,24 @@ export class WorksheetComponent {
         this.items.set(r.items);
         this.total.set(r.total);
       });
+  }
+  private destroyRef = inject(DestroyRef);
+
+  ngAfterViewInit() {
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        console.log(entry.contentRect.height);
+        this.tableHeight$.set(Math.round(entry.contentRect.height));
+        this.onIndexChange(this.index());
+      }
+    });
+
+    if (this.tableContainer) {
+      this.resizeObserver.observe(this.tableContainer.nativeElement);
+    }
+
+    this.destroyRef.onDestroy(() => {
+      this.resizeObserver.disconnect();
+    });
   }
 }

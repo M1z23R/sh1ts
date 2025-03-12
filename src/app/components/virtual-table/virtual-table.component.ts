@@ -8,13 +8,11 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { WorksheetCell, WorksheetRow } from '../../services/worksheet.service';
-import { ClickOutsideDirective } from '../../directives/click-outside.directive';
 import { AutoFocusDirective } from '../../directives/auto-focus.directive';
-import { TooltipDirective } from '../../directives/tooltip.directive';
 
 @Component({
   selector: 'app-virtual-table',
-  imports: [ClickOutsideDirective, AutoFocusDirective, TooltipDirective, FormsModule],
+  imports: [AutoFocusDirective, FormsModule],
   templateUrl: './virtual-table.component.html',
   styleUrl: './virtual-table.component.css',
 })

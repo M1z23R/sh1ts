@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { WorksheetRow, WorksheetService } from './services/worksheet.service';
+import { WorksheetService } from './services/worksheet.service';
 import { WorkBook, WorkSheet } from 'xlsx';
-import { WorksheetComponent } from './components/worksheet/worksheet.component';
 import {
   TabControlComponent,
   TabControlTab,
@@ -9,7 +8,7 @@ import {
 
 @Component({
   selector: 'app-root',
-  imports: [WorksheetComponent, TabControlComponent],
+  imports: [TabControlComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -31,16 +30,23 @@ export class AppComponent {
   selectedWorksheet = signal<WorkSheet | null>(null);
 
   file = signal<File | null>(null);
-  items = signal<WorksheetRow[]>([]);
-  total = signal<number>(0);
-  perPage = signal<number>(15);
-  index = signal<number>(0);
 
   onFileChange(e: Event) {
     const el = e.target as HTMLInputElement;
     const file = el.files?.[0];
 
     if (!file) {
+      this.file.set(null);
+      return;
+    }
+
+    const allowedTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv',
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Please upload an Excel file.');
       this.file.set(null);
       return;
     }
@@ -55,10 +61,6 @@ export class AppComponent {
       );
       this.selectedWorksheet.set(Object.values(workbook.Sheets)[0]);
     });
-  }
-
-  onChangeWorksheet(worksheet: WorkSheet) {
-    this.selectedWorksheet.set(worksheet);
   }
 
   onExport() {

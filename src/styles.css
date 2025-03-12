@@ -7,7 +7,6 @@ body {
   height: 100vh;
 }
 
-
 .btn-default {
   @apply text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-800;
 }
@@ -36,4 +35,12 @@ input[type="number"],
 input[type="email"],
 textarea {
   @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-500 dark:focus:border-gray-500 hover:border-gray-400 outline-none;
+}
+
+input[type="text"].small,
+input[type="password"].small,
+input[type="number"].small,
+input[type="email"].small,
+textarea.small {
+  @apply px-2 py-0 rounded-md;
 }
