@@ -49,7 +49,7 @@ export class WorksheetService {
     total: number;
   }> => {
     try {
-      const workbook = xlsx.read(await file.arrayBuffer());
+      const workbook = xlsx.read(await file.arrayBuffer(), { codepage: 65001 });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
       const range = this.getWorksheetRange(worksheet);
