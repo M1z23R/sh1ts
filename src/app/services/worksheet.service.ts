@@ -66,6 +66,8 @@ export class WorksheetService {
             value,
             position: `${this.columnToLetter(j)}${i}`,
             editing: false,
+            row: i,
+            col: j,
           };
           row.cells.push(cell);
         }
@@ -80,15 +82,13 @@ export class WorksheetService {
     }
   };
 
-  getPage = async (
+  getItems = async (
     worksheet: xlsx.WorkSheet,
-    start: number,
-    limit: number,
-  ): Promise<{ items: WorksheetRow[]; total: number }> => {
+  ): Promise<{ items: WorksheetRow[]; total: number; cols: string[] }> => {
     try {
       const range = this.getWorksheetRange(worksheet);
       const items: WorksheetRow[] = [];
-      for (let i = start + 1; i <= range.rows && items.length < limit; i++) {
+      for (let i = 1; i <= range.rows; i++) {
         const row: WorksheetRow = { index: i, cells: [] };
         for (let j = 1; j <= range.cols; j++) {
           const value = this.getSafeValueFromCell(
@@ -99,6 +99,8 @@ export class WorksheetService {
             value,
             position: `${this.columnToLetter(j)}${i}`,
             editing: false,
+            row: i,
+            col: j,
           };
           row.cells.push(cell);
         }
@@ -106,10 +108,16 @@ export class WorksheetService {
         items.push(row);
       }
 
-      return { items, total: range.rows };
+      return {
+        items,
+        total: range.rows,
+        cols: Array.from(Array(range.cols)).map((_, i) =>
+          this.columnToLetter(i + 1),
+        ),
+      };
     } catch (error) {
       console.error(error);
-      return { items: [], total: 0 };
+      return { items: [], total: 0, cols: [] };
     }
   };
 
@@ -172,7 +180,9 @@ export interface WorksheetCell {
   value: string;
   position: string; //A1, B2, etc
   editing: boolean;
-  //selected: boolean;
+  row: number;
+  col: number;
+  selected?: boolean;
 }
 
 export interface WorksheetRange {
