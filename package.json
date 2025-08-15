@@ -33,7 +33,6 @@
     "@angular-devkit/build-angular": "^19.2.0",
     "@angular/cli": "^19.2.0",
     "@angular/compiler-cli": "^19.2.0",
-    "@angular/language-server": "^19.2.0",
     "@types/jasmine": "~5.1.0",
     "@types/xlsx": "^0.0.36",
     "autoprefixer": "^10.4.20",
