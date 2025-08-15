@@ -1,5 +1,5 @@
 {
-  "name": "sh1ts",
+  "name": "sheets",
   "version": "0.0.0",
   "homepage": "https://m1z23r.github.io/sh1ts",
   "scripts": {
@@ -8,7 +8,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng deploy --base-href=/sh1ts/"
+    "deploy": "ng deploy --base-href=/sh1ts/ && yarn deploy:prod",
+    "deploy:prod": "yarn build && mkdir -p /var/www/sheets/ && rm -rf /var/www/sheets/* && cp dist/sh1ts/browser/* /var/www/sheets/ && cd /var/www/sheets"
   },
   "private": true,
   "dependencies": {
