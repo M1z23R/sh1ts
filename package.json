@@ -10,7 +10,7 @@
     "test": "ng test",
     "prod": "yarn deploy:git && yarn deploy:prod",
     "deploy:git": "ng deploy --base-href=/sh1ts/",
-    "deploy:prod": "mkdir -p /var/www/sheets/ && rm -rf /var/www/sheets/* && cp -r dist/sh1ts/browser/* /var/www/sheets/"
+    "deploy:prod": "yarn build --prod --base-href / && mkdir -p /var/www/sheets/ && rm -rf /var/www/sheets/* && cp -r dist/sh1ts/browser/* /var/www/sheets/"
   },
   "private": true,
   "dependencies": {
